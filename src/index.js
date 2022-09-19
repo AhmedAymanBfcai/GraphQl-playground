@@ -4,31 +4,27 @@ import { ApolloServer, gql } from "apollo-server";
 // Type definations (schema)
 const typeDefs = gql`
   type Query {
+    me: User!
+  }
+
+  type User {
     id: ID! #The "!" means that you have to return an idValue and you cannot return "null" :)
     name: String!
-    age: Int!
-    employed: Boolean!
-    gpa: Float
+    email: String!
+    age: Int
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    id: () => {
-      return 1;
-    },
-    name: () => {
-      return "Ahmed Ayman";
-    },
-    age: () => {
-      return 22;
-    },
-    employed: () => {
-      return true;
-    },
-    gpa: () => {
-      return 3.8;
+    me() {
+      return {
+        id: "1",
+        name: "Ahmed BFCAI",
+        email: "ahmed@example.com",
+        age: null,
+      };
     },
   },
 };
