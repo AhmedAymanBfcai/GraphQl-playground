@@ -1,26 +1,34 @@
-import { GraphQLServer } from "graphql-yoga";
+import { ApolloServer, gql } from "apollo-server";
 
-// Type definations [Schema]
-const typeDefs = `
-    type Query {
-        hello: String,
-    }
+const typeDefs = gql`
+  type Book {
+    title: String
+    author: String
+  }
+  type Query {
+    books: [Book]
+  }
 `;
 
-// Resolvers
 const resolvers = {
   Query: {
-    hello() {
-      return "This is my first query :)";
-    },
+    books: () => books,
   },
 };
 
-const server = new GraphQLServer({
-  typeDefs,
-  resolvers,
+const server = new ApolloServer({ typeDefs, resolvers });
+
+server.listen().then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
 });
 
-server.start(() => {
-  console.log("The server is up :)");
-});
+const books = [
+  {
+    title: "The Great Gatsby",
+    author: "F. Scott Fitzgerald",
+  },
+  {
+    title: "Wuthering Heights",
+    author: "Emily Brontë",
+  },
+];
