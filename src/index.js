@@ -1,11 +1,84 @@
 import { ApolloServer, gql } from "apollo-server";
 
 // Scalar types - String, Bolean, Int, Float, ID.
+
+// Demo user data
+const users = [
+  {
+    id: "1",
+    name: "Ahmed",
+    email: "ahmed@example.com",
+    age: 22,
+  },
+  {
+    id: "2",
+    name: "Diaa",
+    email: "Diaa@examle.com",
+  },
+  {
+    id: "3",
+    name: "Ziad",
+    email: "Ziad@examle.com",
+  },
+];
+
+const posts = [
+  {
+    id: "10",
+    title: "GraphQL 101",
+    body: "This is how to use GraphQL...",
+    published: true,
+    author: "1",
+  },
+  {
+    id: "11",
+    title: "GraphQL 201",
+    body: "This is an advanced GraphQL post...",
+    published: false,
+    author: "1",
+  },
+  {
+    id: "12",
+    title: "Programming Music",
+    body: "",
+    published: false,
+    author: "2",
+  },
+];
+
+const comments = [
+  {
+    id: "102",
+    text: "This worked well for me. Thanks!",
+    author: "3",
+    post: "10",
+  },
+  {
+    id: "103",
+    text: "Glad you enjoyed it.",
+    author: "1",
+    post: "10",
+  },
+  {
+    id: "104",
+    text: "This did no work.",
+    author: "2",
+    post: "11",
+  },
+  {
+    id: "105",
+    text: "Nevermind. I got it to work.",
+    author: "1",
+    post: "11",
+  },
+];
+
 // Type definations (schema)
 const typeDefs = gql`
   type Query {
-    greeting(name: String, position: String): String! #The "!" means that you have to return an idValue and you cannot return "null" :)
-    add(a: Float!, b: Float!): Float!
+    users(query: String): [User!]!
+    posts(query: String): [Post!]!
+    comments: [Comment!]!
     me: User!
     post: Post!
   }
@@ -15,6 +88,8 @@ const typeDefs = gql`
     name: String!
     email: String!
     age: Int
+    posts: [Post!]!
+    comments: [Comment!]!
   }
 
   type Post {
@@ -22,27 +97,53 @@ const typeDefs = gql`
     title: String!
     body: String!
     published: Boolean!
+    author: User!
+    comments: [Comment!]!
+  }
+
+  type Comment {
+    id: ID!
+    text: String!
+    author: User!
+    post: Post!
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    greeting(parent, args, ctx, info) {
-      if (args.name && args.position) {
-        return `Hello, ${args.name}! You are my favoriate ${args.position}.`;
-      } else {
-        return "Hello!";
+    users(parent, args, ctx, info) {
+      if (!args.query) {
+        return users;
       }
+
+      return users.filter((user) => {
+        return user.name.toLowerCase().includes(args.query.toLowerCase());
+      });
     },
-    add(parent, args, ctx, info) {
-      return args.a + args.b;
+    posts(parent, args, ctx, info) {
+      if (!args.query) {
+        return posts;
+      }
+
+      return posts.filter((post) => {
+        const isTitleMatch = post.title
+          .toLowerCase()
+          .includes(args.query.toLowerCase());
+        const isBodyMatch = post.body
+          .toLowerCase()
+          .includes(args.query.toLowerCase());
+        return isTitleMatch || isBodyMatch;
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments;
     },
     me() {
       return {
         id: "123098",
-        name: "Ahmed",
-        email: "ahmed@example.com",
+        name: "Mike",
+        email: "mike@example.com",
       };
     },
     post() {
@@ -52,6 +153,42 @@ const resolvers = {
         body: "",
         published: false,
       };
+    },
+  },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author;
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comment) => {
+        return comment.post === parent.id;
+      });
+    },
+  },
+  Comment: {
+    author(parent, args, ctx, info) {
+      return users.find((user) => {
+        return user.id === parent.author;
+      });
+    },
+    post(parent, args, ctx, info) {
+      return posts.find((post) => {
+        return post.id === parent.post;
+      });
+    },
+  },
+  User: {
+    posts(parent, args, ctx, info) {
+      return posts.filter((post) => {
+        return post.author === parent.id;
+      });
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter((comment) => {
+        return comment.author === parent.id;
+      });
     },
   },
 };
