@@ -1,4 +1,5 @@
 import { ApolloServer, gql } from "apollo-server";
+import { v4 as uuidv4 } from "uuid";
 
 // Scalar types - String, Bolean, Int, Float, ID.
 
@@ -83,12 +84,25 @@ const typeDefs = gql`
     post: Post!
   }
 
+  type Mutation {
+    createUser(name: String!, email: String!, age: Int): User!
+
+    createPost(
+      title: String!
+      body: String!
+      published: Boolean!
+      author: ID!
+    ): Post!
+
+    createComment(text: String!, post: String!, author: ID!): Comment!
+  }
+
   type User {
     id: ID!
     name: String!
     email: String!
     age: Int
-    posts: [Post!]!
+    posts: [Post!]! # Non-Nullable array and Non-Nullable posts.
     comments: [Comment!]!
   }
 
@@ -153,6 +167,48 @@ const resolvers = {
         body: "",
         published: false,
       };
+    },
+  },
+  Mutation: {
+    createUser(parent, args, ctx, info) {
+      const emailTaken = users.some((user) => {
+        return user.email === args.email;
+      });
+
+      if (emailTaken) {
+        throw new Error("Email has already taken.");
+      }
+
+      const user = {
+        id: uuidv4(),
+        name: args.name,
+        email: args.email,
+        age: args.age,
+      };
+
+      users.push(user);
+      return user;
+    },
+
+    createPost(parent, args, ctx, info) {
+      const userExists = users.some((user) => {
+        return user.id === args.author;
+      });
+
+      if (userExists) {
+        throw new Error("User is not exist");
+      }
+
+      const post = {
+        id: uuidv4(),
+        title: args.title,
+        body: args.body,
+        published: args.published,
+        author: args.author,
+      };
+
+      posts.push(post);
+      return post;
     },
   },
   Post: {
