@@ -1,3 +1,3 @@
 # GrqphQl-playground
 
-Projects realted to GraphQl ;)
+I am just playing with GraphQL :)
