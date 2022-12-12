@@ -42,7 +42,7 @@ const posts = [
     id: "12",
     title: "Programming Music",
     body: "",
-    published: false,
+    published: true,
     author: "2",
   },
 ];
@@ -94,7 +94,7 @@ const typeDefs = gql`
       author: ID!
     ): Post!
 
-    createComment(text: String!, post: String!, author: ID!): Comment!
+    createComment(text: String!, post: ID!, author: ID!): Comment!
   }
 
   type User {
@@ -195,7 +195,7 @@ const resolvers = {
         return user.id === args.author;
       });
 
-      if (userExists) {
+      if (!userExists) {
         throw new Error("User is not exist");
       }
 
@@ -209,6 +209,30 @@ const resolvers = {
 
       posts.push(post);
       return post;
+    },
+
+    createComment(parent, args, ctx, info) {
+      const userExists = users.some((user) => {
+        return user.id === args.author;
+      });
+
+      const postExists = posts.some((post) => {
+        return post.id === args.post && post.published;
+      });
+
+      if (!userExists || !postExists) {
+        throw new Error("Unable to find user and post");
+      }
+
+      const comment = {
+        id: uuidv4(),
+        text: args.text,
+        author: args.author,
+        post: args.post,
+      };
+
+      comments.push(comment);
+      return comment;
     },
   },
   Post: {
