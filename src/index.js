@@ -1,5 +1,5 @@
 import { ApolloServer, gql } from "apollo-server";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid"; //To generate random ID's
 
 // Scalar types - String, Bolean, Int, Float, ID.
 
@@ -181,9 +181,7 @@ const resolvers = {
 
       const user = {
         id: uuidv4(),
-        name: args.name,
-        email: args.email,
-        age: args.age,
+        ...args,
       };
 
       users.push(user);
@@ -201,10 +199,7 @@ const resolvers = {
 
       const post = {
         id: uuidv4(),
-        title: args.title,
-        body: args.body,
-        published: args.published,
-        author: args.author,
+        ...args,
       };
 
       posts.push(post);
@@ -226,9 +221,7 @@ const resolvers = {
 
       const comment = {
         id: uuidv4(),
-        text: args.text,
-        author: args.author,
-        post: args.post,
+        ...args,
       };
 
       comments.push(comment);

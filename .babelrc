@@ -1,3 +1,9 @@
+// This file to configure bable
+
+// Pre-Set is nothing more a collection of plugins all grouped together to provide some cohesive behavior.
+// IN this case we need an individual plugin so we have both presets and plugins listed.
+
 {
-  "presets": ["env"]
+  "presets": ["env"],
+  "plugins": ["transform-object-rest-spread"]
 }
