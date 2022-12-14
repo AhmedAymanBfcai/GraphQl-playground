@@ -43,4 +43,5 @@ const Query = {
   },
 };
 
-export { Query as default };
+module.exports = Query;
+// export { Query as default };

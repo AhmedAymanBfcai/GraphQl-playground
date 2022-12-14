@@ -11,4 +11,5 @@ const User = {
   },
 };
 
-export { User as default };
+module.exports = User;
+// export { User as default };

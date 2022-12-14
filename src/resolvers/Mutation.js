@@ -184,4 +184,5 @@ const Mutation = {
   },
 };
 
-export { Mutation as default };
+module.exports = Mutation;
+// export { Mutation as default };
