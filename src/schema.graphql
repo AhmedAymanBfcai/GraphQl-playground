@@ -23,6 +23,12 @@ const typeDefs = gql `
     updateComment(id: ID!, data: updateCommentInput!): Comment!
   }
 
+  type Subscription {
+    count: Int!
+    comment(postId: ID!): Comment!
+    post: Post!
+  }
+
   input CreateUserInput {
     name: String!
     email: String!
@@ -84,6 +90,5 @@ const typeDefs = gql `
     post: Post!
   }
 `;
-
 
 module.exports = typeDefs ;
